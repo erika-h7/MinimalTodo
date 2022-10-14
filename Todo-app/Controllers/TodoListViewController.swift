@@ -11,10 +11,11 @@ class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
     
-    let defaults = UserDefaults.standard
-    
-    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+   
+
     override func viewDidLoad() {
+        print(dataFilePath)
         super.viewDidLoad()
         
         let newItem = Item()
@@ -30,9 +31,9 @@ class TodoListViewController: UITableViewController {
         itemArray.append(newItem3)
         
         
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            itemArray = items
-        }
+//        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
+//            itemArray = items
+//        }
     }
     
     
@@ -61,13 +62,12 @@ class TodoListViewController: UITableViewController {
         // toggle done check mark
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        tableView.reloadData()
-        
+        saveItems()
+                
         // deselects row with a animation
         tableView.deselectRow(at: indexPath, animated: true)
-        
-    
     }
+    
     
     //MARK - Add new items button
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -83,22 +83,34 @@ class TodoListViewController: UITableViewController {
             newItem.title = textField.text!
             
             self.itemArray.append(newItem)
+            self.saveItems()
             
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
-            
-            self.tableView.reloadData()
         }
         
         alert.addTextField { (alertTextFiled) in
             alertTextFiled.placeholder = "Create new Item"
             textField = alertTextFiled
-            
-            
         }
         
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    
+    //MARK - Model Manipulation Methods
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        
+        
+        self.tableView.reloadData()
     }
 }
 
