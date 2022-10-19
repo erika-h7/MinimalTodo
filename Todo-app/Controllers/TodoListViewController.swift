@@ -91,6 +91,7 @@ class TodoListViewController: UITableViewController {
                     try self.realm.write {
                         let newItem = Item()
                         newItem.title = textField.text!
+                        newItem.dateCreated = Date()
                         currentCategory.items.append(newItem)
                     }
                 } catch {
@@ -116,9 +117,9 @@ class TodoListViewController: UITableViewController {
     // MARK: - Model Manipulation Methods
 
     func loadItems() {
-        
-        todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
-        
+
+        todoItems = selectedCategory?.items.sorted(byKeyPath: "dateCreated", ascending: false)
+
         tableView.reloadData()
     }
     
@@ -131,25 +132,21 @@ class TodoListViewController: UITableViewController {
 extension TodoListViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+
+        tableView.reloadData()
+
         
-        //        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        //
-        //        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        //
-        //        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        //
-        //        if searchBar.text == "" {
-        //            loadItems()
-        //
-        //            DispatchQueue.main.async {
-        //                searchBar.resignFirstResponder()
-        //            }
-        //
-        //        } else {
-        //            loadItems(with: request, predicate: predicate)
-        //        }
-        
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+
     }
-    
+
     
 }

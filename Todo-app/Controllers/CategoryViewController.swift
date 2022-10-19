@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreData
 import RealmSwift
 
 class CategoryViewController: UITableViewController {
@@ -28,6 +27,7 @@ class CategoryViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return categories?.count ?? 1
+        
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -35,6 +35,8 @@ class CategoryViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         
         cell.textLabel?.text = categories?[indexPath.row].name ?? "🚧 NO CATEGORIES ADDED ☝️"
+        
+        print("This is the cell >>>>>>>>> \(cell)")
         
         return cell
     }
@@ -57,6 +59,8 @@ class CategoryViewController: UITableViewController {
 
     func loadCategories() {
         categories = realm.objects(Category.self)
+        
+        print("loadCat >>>>>>>>>>>> \(categories!)")
         
         tableView.reloadData()
     }
