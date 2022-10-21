@@ -7,10 +7,9 @@
 
 import UIKit
 import RealmSwift
-import SwipeCellKit
+import ChameleonFramework
 
-
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
@@ -19,12 +18,13 @@ class CategoryViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         loadCategories()
         
-        tableView.rowHeight = 75.0
+        tableView.rowHeight = 70.0
+        tableView.separatorStyle = .none
     }
-
+    
     
     // MARK: - Tableview Datasource Methods
     
@@ -35,20 +35,18 @@ class CategoryViewController: UITableViewController {
     }
     
     
-//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! SwipeTableViewCell
-//        cell.delegate = self
-//        return cell
-//    }
-    
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+//        let myFavoriteColors = [UIColor.flatGray(), UIColor.flatForestGreen(), UIColor.flatBlue()]
         
         cell.textLabel?.text = categories?[indexPath.row].name ?? "🚧 NO CATEGORIES ADDED ☝️"
-        
-        cell.delegate = self
+        cell.textLabel?.textColor = UIColor.white
+        cell.backgroundColor = UIColor(hexString: categories?[indexPath.row].color ?? "#E3D4FF")
+//        cell.backgroundColor = UIColor(randomColorIn: myFavoriteColors)
+//        cell.backgroundColor = ComplementaryFlatColorOf(FlatPink())
+//        cell.backgroundColor = UIColor.randomFlat().hexValue()
+//        cell.backgroundColor = UIColor(hexString: "#a0a0dd")
         
         print("This is the cell >>>>>>>>> \(cell)")
         
@@ -56,7 +54,7 @@ class CategoryViewController: UITableViewController {
     }
     
     
-    // MARK: - Manipulation Methods (save data and load data)
+    // MARK: - Data Manipulation Methods (save data and load data)
     
     func save(category: Category) {
         
@@ -70,13 +68,30 @@ class CategoryViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-
+    
     func loadCategories() {
         categories = realm.objects(Category.self)
         
         print("loadCat >>>>>>>>>>>> \(categories!)")
         
         tableView.reloadData()
+    }
+    
+    
+    // MARK: - Delete Data From Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let categoryForDeletion = self.categories?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(categoryForDeletion)
+                }
+            } catch {
+                print("Error deleting category, \(error)")
+            }
+            
+            tableView.reloadData()
+        }
     }
     
     
@@ -91,10 +106,10 @@ class CategoryViewController: UITableViewController {
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             //what will happen once the user clicks the Add Item button on our UIAlert
             
-            
             let newCategory = Category()
-
+            
             newCategory.name = textField.text!
+            newCategory.color = UIColor.randomFlat().hexValue()
             
             self.save(category: newCategory)
         }
@@ -122,72 +137,5 @@ class CategoryViewController: UITableViewController {
         if let indexPath = tableView.indexPathForSelectedRow {
             destinationVC.selectedCategory = categories?[indexPath.row]
         }
-    }
-}
-
-
-    // MARK: - Swipe Cell Delegate Methods
-
-extension CategoryViewController: SwipeTableViewCellDelegate {
-    
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else { return nil }
-
-        let deleteAction = SwipeAction(style: .destructive, title: nil) { action, indexPath in
-            print("Item deleted")
-            
-            if let categoryForDeletion = self.categories?[indexPath.row] {
-                do {
-                    try self.realm.write {
-                        self.realm.delete(categoryForDeletion)
-                    }
-                } catch {
-                    print("Error deleting category, \(error)")
-                }
-                
-                tableView.reloadData()
-            }
-        }
-
-        // customize the action appearance
-        deleteAction.transitionDelegate = ScaleTransition.default
-        deleteAction.textColor = UIColor(.red)
-        deleteAction.backgroundColor = UIColor(.white)
-       
-        let imageIcon = self.resizeImage(image: UIImage(named: "trash")!, targetSize: CGSizeMake(40.0, 40.0))
-//        let imageIcon = UIImage(named: "trash")
-        deleteAction.image = imageIcon
-        
-        
-        
-
-        return [deleteAction]
-    }
-    
-    
-    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
-        let size = image.size
-        
-        let widthRatio  = targetSize.width  / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        // Figure out what our orientation is, and use that to form the rectangle
-        var newSize: CGSize
-        if(widthRatio > heightRatio) {
-            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
-        } else {
-            newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
-        }
-        
-        // This is the rect that we've calculated out and this is what is actually used below
-        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-        
-        // Actually do the resizing to the rect using the ImageContext stuff
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage!
     }
 }
