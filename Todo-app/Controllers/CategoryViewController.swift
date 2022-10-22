@@ -25,6 +25,12 @@ class CategoryViewController: SwipeTableViewController {
         tableView.separatorStyle = .none
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        guard let navBar = navigationController?.navigationBar else {fatalError("Navigation controller does not exist.")}
+        
+        navBar.backgroundColor = UIColor(hexString: "E3D4FF")
+    }
+    
     
     // MARK: - Tableview Datasource Methods
     
@@ -40,9 +46,23 @@ class CategoryViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
 //        let myFavoriteColors = [UIColor.flatGray(), UIColor.flatForestGreen(), UIColor.flatBlue()]
         
-        cell.textLabel?.text = categories?[indexPath.row].name ?? "🚧 NO CATEGORIES ADDED ☝️"
-        cell.textLabel?.textColor = UIColor.white
-        cell.backgroundColor = UIColor(hexString: categories?[indexPath.row].color ?? "#E3D4FF")
+//        cell.textLabel?.text = categories?[indexPath.row].name ?? "🚧 NO CATEGORIES ADDED ☝️"
+//        cell.textLabel?.textColor = UIColor.white
+//        cell.backgroundColor = UIColor(hexString: categories?[indexPath.row].color ?? "#E3D4FF")
+        
+        if let category = categories?[indexPath.row] {
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
+                    
+            cell.backgroundColor = categoryColor
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+                    
+        }
+        
+
+        
+        
 //        cell.backgroundColor = UIColor(randomColorIn: myFavoriteColors)
 //        cell.backgroundColor = ComplementaryFlatColorOf(FlatPink())
 //        cell.backgroundColor = UIColor.randomFlat().hexValue()

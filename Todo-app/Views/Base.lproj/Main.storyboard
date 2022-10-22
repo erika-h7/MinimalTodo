@@ -12,8 +12,8 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="RUB-he-C3O" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="cZz-cf-da2">
-                        <rect key="frame" x="0.0" y="47" width="390" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="cZz-cf-da2">
+                        <rect key="frame" x="0.0" y="47" width="390" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <textAttributes key="titleTextAttributes">
@@ -57,7 +57,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="MinimalToDo" id="GmU-8g-RoM">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="F7j-Om-Xyj">
-                            <color key="tintColor" red="0.88864400349999995" green="0.83301202929999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="tintColor" red="0.8901960784313725" green="0.83137254901960778" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="addButtonPressed:" destination="qLm-b4-GLK" id="HwX-4M-Tng"/>
                             </connections>
@@ -79,9 +79,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="CpX-7N-6fg">
+                        <searchBar key="tableHeaderView" contentMode="redraw" placeholder="Search Item" id="CpX-7N-6fg">
                             <rect key="frame" x="0.0" y="0.0" width="390" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="barTintColor" red="0.89019607840000003" green="0.83137254900000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <textInputTraits key="textInputTraits"/>
                             <connections>
                                 <outlet property="delegate" destination="PlZ-NV-Pg1" id="Jio-Ev-5YW"/>
@@ -104,12 +105,14 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Items" id="c6Z-kc-CSG">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="ZBO-sq-bx2">
-                            <color key="tintColor" red="0.88864400349999995" green="0.83301202929999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="addButtonPressed:" destination="PlZ-NV-Pg1" id="6Qn-pQ-6zI"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="searchBar" destination="CpX-7N-6fg" id="jUF-oj-RKt"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0io-FT-7v1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
